@@ -5,5 +5,5 @@ import App from "./App";
 import './index.css'
 
 window.Buffer = window.Buffer || Buffer;
-createRoot(document.getElementById("root") as HTMLElement).render(<App />);
+createRoot(document.getElementById("root")).render(<App />);
 register();
