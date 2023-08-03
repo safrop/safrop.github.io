@@ -1,6 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 export { observer } from 'mobx-react-lite';
 
+// const url = new URL("https://safrop.zk524gg.workers.dev")
+const url = new URL("http://localhost:8787")
+const ssl = false
+const r = async (pathname, data) => {
+	[url.protocol, url.pathname] = [ssl ? 'https' : 'http', pathname]
+	return fetch(url, { method: 'POST', body: JSON.stringify(data) }).then(_ => _.text())
+}
 const buffer2hex = (b) => Array.from(new Uint8Array(b)).map((b) => b.toString(16).padStart(2, '0')).join('')
 const hex2buffer = (s) => new Uint8Array(s.match(/../g).map(h => parseInt(h, 16))).buffer
 const sha256buffer = (data) => crypto.subtle.digest('SHA-256', new TextEncoder('utf8').encode(data))
@@ -11,18 +18,7 @@ const genPub = (n) => crypto.subtle.importKey('jwk', { "alg": "RSA-OAEP-256", "e
 const genKey = () => crypto.subtle.generateKey({ name: "RSA-OAEP", modulusLength: 4096, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" }, true, ["encrypt", "decrypt"])
 	.then(async ({ privateKey, publicKey }) => ([privateKey, (await crypto.subtle.exportKey('jwk', publicKey))['n']]))
 
-// const url = new URL("https://safrop.zk524gg.workers.dev")
-const url = new URL("http://localhost:8787")
-const ssl = false
-const r = async (pathname, data) => {
-	[url.protocol, url.pathname] = [ssl ? 'https' : 'http', pathname]
-	return fetch(url, { method: 'POST', body: JSON.stringify(data) }).then(_ => _.text())
-}
-
-
-
 class Store {
-	K = ''
 	V = ''
 	M = [void 0, '', '']
 	U = [void 0, '']
@@ -47,9 +43,9 @@ class Store {
 			this.set('connected', false)
 		}
 	}
-	up_pub = (k, v) => r('up', { k, v })
-	dn_pub = (k) => r('dn', { k })
-	up_sec = (v) => enc(this.U[0], v).then(buffer2hex).then((v) => r('up', { k: this.U[1], v }))
-	dn_sec = () => r('dn', { k: this.M[2] }).then(_ => dec(this.M[0], hex2buffer(_))).then(_ => this.set('V', _))
+	up_pub = (k, v) => k ? r('up', { k, v }) : Promise.reject("Empty Key")
+	dn_pub = (k, peek) => k ? r('dn', { k, peek }) : Promise.reject("Empty Key")
+	up_sec = (v) => v ? enc(this.U[0], v).then(buffer2hex).then((v) => r('up', { k: this.U[1], v })) : Promise.reject("Empty Value")
+	dn_sec = () => r('dn', { k: this.M[2] }).then(_ => _ ? dec(this.M[0], hex2buffer(_)) : _)
 }
 export default new Store();
