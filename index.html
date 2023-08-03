@@ -1,0 +1,26 @@
+<html>
+<p>time: <span id="time"></span></p>
+<button id="click">Click</button>
+<button id="close">Close</button>
+<script>
+    // const url = "wss://zkair.zk524gg.workers.dev/ws"
+    const url = "ws://127.0.0.1:8787/ws"
+    let ws
+    const updateCount = (time) => (document.querySelector("#time").innerText = time)
+    const websocket = async () => {
+        ws = new WebSocket(url)
+        ws.addEventListener("open", () => updateCount(''))
+        ws.addEventListener("close", () => updateCount(''))
+        ws.addEventListener("message", ({ data }) => updateCount(JSON.parse(data)['time']))
+    }
+    websocket()
+    document.querySelector("#click").addEventListener("click", () => {
+        if (ws.readyState !== 1) {
+            websocket()
+            setTimeout(() => ws.send("CLICK"), 200)
+        } else ws.send("CLICK")
+    })
+    document.querySelector("#close").addEventListener("click", () => ws && ws.close())
+</script>
+
+</html>
