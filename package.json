@@ -7,6 +7,6 @@
     "dev:remote": "wrangler dev index.js --remote",
     "deploy": "wrangler deploy index.js"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }

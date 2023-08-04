@@ -9,11 +9,14 @@ addEventListener('fetch', (e) => e.respondWith((async () => {
     case '/up':
       params = await e.request.json()
       if (await safrop.get(params['k']) && params['k'].length < 32) return response('Existed', { status: 401 })
-      await safrop.put(params['k'], params['v'], { expirationTtl: 60 })
+      await safrop.put(params['k'], params['v'], { expirationTtl: 300 })
       return response(params['k'])
     case '/dn':
       params = await e.request.json()
-      return response(await safrop.get(params['k']))
+      return safrop.get(params['k']).then(async (v) => {
+        params['peek'] || await safrop.delete(params['k'])
+        return response(v)
+      })
     case '/ws':
       if (e.request.headers.get("Upgrade") !== "websocket") return response("Expected websocket", { status: 400 })
       const [webSocket, server] = Object.values(new WebSocketPair())
@@ -27,13 +30,11 @@ addEventListener('fetch', (e) => e.respondWith((async () => {
               clearInterval(timer)
               w.close()
             }
-            safrop.get(data).then((v)=>{
-              if (v) {
-                clearInterval(timer)
-                w.send(v)
-                w.close()
-              }
-            })
+            safrop.get(data).then((v) => v && safrop.delete(data).then(() => {
+              clearInterval(timer)
+              w.send(v)
+              w.close()
+            }))
             count += 1
           }, 1000)
         })

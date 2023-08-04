@@ -1,5 +1,5 @@
 account_id = "be913a1aa4fb299936674b7b0fc69985"
-compatibility_date = "2023-08-03"
+compatibility_date = "2023-07-24"
 kv_namespaces = [
   {binding = "safrop", id = "3e974bcb4abc4a039fdcd7d20be137e3", preview_id = "f02d81311cf24098bf885c6676c466ac"},
 ]
