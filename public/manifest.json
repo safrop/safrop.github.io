@@ -1,12 +1,12 @@
 {
-  "short_name": "ZKAIR",
-  "name": "ZKAIR",
+  "short_name": "SAFROP",
+  "name": "SAFROP",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "64x64 48x48 32x32 16x16",
+      "src": "favicon.png",
+      "type": "image/png",
       "purpose": "any maskable monochrome",
-      "type": "image/x-icon"
+      "sizes": "64x64 48x48 32x32 16x16"
     },
     {
       "src": "logo192.png",
@@ -29,7 +29,12 @@
     {
       "name": "Scan",
       "url": "scan",
-      "icons": [{ "src": "scan.svg", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "scan.svg",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "share_target": {
@@ -40,7 +45,12 @@
       "title": "title",
       "text": "text",
       "url": "url",
-      "files": [{ "name": "image", "accept": "image/*" }]
+      "files": [
+        {
+          "name": "image",
+          "accept": "image/*"
+        }
+      ]
     }
   }
 }

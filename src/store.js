@@ -1,12 +1,20 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 export { observer } from 'mobx-react-lite';
 
-// const url = new URL("https://safrop.zk524gg.workers.dev")
-const url = new URL("http://localhost:8787")
-const ssl = false
+const CFG = {}
+switch (window.location.host) {
+	case '127.0.0.1':
+	case 'localhost':
+		CFG['url'] = new URL("http://localhost:8787")
+		CFG['ssl'] = false
+	default:
+		CFG['url'] = new URL("https://safrop.zk524gg.workers.dev")
+		CFG['ssl'] = true
+}
+
 const r = async (pathname, data) => {
-	[url.protocol, url.pathname] = [ssl ? 'https' : 'http', pathname]
-	return fetch(url, { method: 'POST', body: JSON.stringify(data) }).then(_ => _.text())
+	[CFG['url'].protocol, CFG['url'].pathname] = [CFG['ssl'] ? 'https' : 'http', pathname]
+	return fetch(CFG['url'], { method: 'POST', body: JSON.stringify(data) }).then(_ => _.text())
 }
 const buffer2hex = (b) => Array.from(new Uint8Array(b)).map((b) => b.toString(16).padStart(2, '0')).join('')
 const hex2buffer = (s) => new Uint8Array(s.match(/../g).map(h => parseInt(h, 16))).buffer
@@ -32,8 +40,8 @@ class Store {
 	set_pubkey = async (_) => this.set('U', [await genPub(_), await sha256(_)])
 	conn = (ok) => {
 		if (ok) runInAction(() => {
-			[url.protocol, url.pathname] = [ssl ? 'wss' : 'ws', 'ws']
-			this.W = new WebSocket(url)
+			[CFG['url'].protocol, CFG['url'].pathname] = [CFG['ssl'] ? 'wss' : 'ws', 'ws']
+			this.W = new WebSocket(CFG['url'])
 			this.W.addEventListener("open", () => this.set('connected', true) && this.W.send(this.M[2]))
 			this.W.addEventListener("close", () => this.set('connected', false))
 			this.W.addEventListener("message", ({ data }) => dec(this.M[0], hex2buffer(data)).then(_ => this.set('V', _)))
