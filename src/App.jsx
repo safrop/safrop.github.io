@@ -52,12 +52,12 @@ const Drop = observer(() => {
                         store.up_pub(prompt("Input a key to upload your value without encryption"), input).then(() => alert(`Uploaded: ${input}`)).finally(store.toggleDrop)} disabled={!input} />
                     <MenuItem dense key={'dn-pub'} children={<><span className="material-icons">download</span><span>Public Value</span></>} onClick={() =>
                         store.dn_pub(prompt("Input a key to download other side value without encryption")).then(store.setInput).finally(store.toggleDrop)}
-                        {...onLongPress(() => store.dn_pub(prompt("Input a key")).then(_ => setTimeout(() => navigator.clipboard.writeText(_), 333)).then(() => store.set({ input: 'Sent to clipboard' })).finally(store.toggleDrop))} />
+                        {...onLongPress(() => store.dn_pub(prompt("Input a key")).then(_ => (store.set({ input: _ ? 'Sent to clipboard' : 'None' }), setTimeout(() => navigator.clipboard.writeText(_), 333))).finally(store.toggleDrop))} />
                     <MenuItem dense key={'up-sec'} children={<><span className="material-icons">upload</span><span>Secret Value</span></>} onClick={() =>
                         store.up_sec(store.input).then(() => alert(`Sent to ${key2[1]}`)).finally(store.toggleDrop)} disabled={!key2[1] || !input} />
                     <MenuItem dense key={'dn-sec'} children={<><span className="material-icons">download</span><span>Secret Value</span></>} onClick={() =>
                         store.dn_sec().then(store.setInput).finally(store.toggleDrop)}
-                        {...onLongPress(() => store.dn_sec().then(_ => setTimeout(() => navigator.clipboard.writeText(_), 333)).then(() => store.set({ input: 'Sent to clipboard' })).finally(store.toggleDrop))} />
+                        {...onLongPress(() => store.dn_sec().then(_ => (store.set({ input: _ ? 'Sent to clipboard' : 'None' }), setTimeout(() => navigator.clipboard.writeText(_), 333))).finally(store.toggleDrop))} />
                     <MenuItem dense key={'conn-1'} children={<><span className="material-icons">wifi</span><span>Connect From</span></>} onClick={() =>
                         store.conn().then(() => (store.setInput(key1[1]), store.toggleDrop()))} />
                     <MenuItem dense key={'conn-2'} children={<><span className="material-icons">wifi</span><span>Connect To</span></>} onClick={() => {
