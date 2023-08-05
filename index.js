@@ -13,8 +13,8 @@ addEventListener('fetch', (e) => e.respondWith((async () => {
       return response(params['k'])
     case '/dn':
       params = await e.request.json()
-      return safrop.get(params['k']).then(async (v) => {
-        params['peek'] || await safrop.delete(params['k'])
+      return safrop.get(params['k']).then((v) => {
+        // params['peek'] || await safrop.delete(params['k'])
         return response(v)
       })
     case '/ws':
