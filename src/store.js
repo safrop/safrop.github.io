@@ -29,7 +29,6 @@ class Store {
     scanmode = 'environment'
     key1 = [void 0, '', '']
     key2 = [void 0, '']
-    connected = false
     constructor() {
         makeAutoObservable(this);
         this.set_key1()

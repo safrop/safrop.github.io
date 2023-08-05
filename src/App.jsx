@@ -29,30 +29,38 @@ const ShareList = observer(() => <>
     <IconButton onClick={(e) => store.toggleShare(e.currentTarget)} children={<Share color='primary' />} />
     <Popover open={Boolean(store.shareAnchor)} anchorEl={store.shareAnchor} onClose={() => store.toggleShare()} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} children={
         <ClickAwayListener onClickAway={() => store.toggleShare()} children={
-            <MenuList autoFocusItem children={['text', 'file', 'files'].map((type) => <MenuItem key={'share' + type} onClick={() => store.share(type)} children={type} />)} />} />} />
+            <MenuList autoFocusItem children={['text', 'file', 'files'].map((type) => <MenuItem dense key={'share' + type} onClick={() => store.share(type)} children={type} />)} />} />} />
 </>)
 
 const Drop = observer(() => {
     const { input, key1, key2 } = store
+    const onLongPress = (cb, c, b) => {
+        const z = _ => (b && _.stopPropagation(), removeEventListener('click', z, true))
+        const x = _ => (b = false, c = setTimeout(() => (cb(), b = true), 1000))
+        const y = _ => (c && clearTimeout(c), addEventListener('click', z, true))
+        return { onTouchStart: x, onMouseDown: x, onTouchEnd: y, onMouseUp: y }
+    }
     return <><IconButton onClick={(e) => store.toggleDrop(e.currentTarget)} children={<Send color='primary' />} />
         <Popover open={Boolean(store.dropAnchor)} anchorEl={store.dropAnchor} onClose={() => store.toggleDrop()} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} children={
             <ClickAwayListener onClickAway={() => store.toggleDrop()} children={
                 <MenuList autoFocusItem>
-                    <MenuItem key={'up-key'} children={<><span className="material-icons">upload</span><span>My Public Key</span></>} onClick={() =>
+                    <MenuItem dense key={'up-key'} children={<><span className="material-icons">upload</span><span>My Public Key</span></>} onClick={() =>
                         store.up_pub(prompt("Input a simple key to upload"), key1[1]).then(() => alert(`Uploaded: ${key1[2].slice(0, 16)}`)).finally(store.toggleDrop)} />
-                    <MenuItem key={'dn-key'} children={<><span className="material-icons">download</span><span>Other side Public Key</span></>} onClick={() =>
+                    <MenuItem dense key={'dn-key'} children={<><span className="material-icons">download</span><span>Other side Public Key</span></>} onClick={() =>
                         store.dn_pub(prompt("Input a given simple key to download other side public key")).then(store.set_key2).then(() => alert(`Downloaded: ${key2[1].slice(0, 16)}`)).finally(store.toggleDrop)} />
-                    <MenuItem key={'up-pub'} children={<><span className="material-icons">upload</span><span>Public Value</span></>} onClick={() =>
+                    <MenuItem dense key={'up-pub'} children={<><span className="material-icons">upload</span><span>Public Value</span></>} onClick={() =>
                         store.up_pub(prompt("Input a key to upload your value without encryption"), input).then(() => alert(`Uploaded: ${input}`)).finally(store.toggleDrop)} disabled={!input} />
-                    <MenuItem key={'dn-pub'} children={<><span className="material-icons">download</span><span>Public Value</span></>} onClick={() =>
-                        store.dn_pub(prompt("Input a key to download other side value without encryption")).then(store.setInput).finally(store.toggleDrop)} />
-                    <MenuItem key={'up-sec'} children={<><span className="material-icons">upload</span><span>Secret Value</span></>} onClick={() =>
+                    <MenuItem dense key={'dn-pub'} children={<><span className="material-icons">download</span><span>Public Value</span></>} onClick={() =>
+                        store.dn_pub(prompt("Input a key to download other side value without encryption")).then(store.setInput).finally(store.toggleDrop)}
+                        {...onLongPress(() => store.dn_pub(prompt("Input a key")).then(_ => setTimeout(() => navigator.clipboard.writeText(_), 333)).then(() => store.set({ input: 'Sent to clipboard' })).finally(store.toggleDrop))} />
+                    <MenuItem dense key={'up-sec'} children={<><span className="material-icons">upload</span><span>Secret Value</span></>} onClick={() =>
                         store.up_sec(store.input).then(() => alert(`Sent to ${key2[1]}`)).finally(store.toggleDrop)} disabled={!key2[1] || !input} />
-                    <MenuItem key={'dn-sec'} children={<><span className="material-icons">download</span><span>Secret Value</span></>} onClick={() =>
-                        store.dn_sec().then(store.setInput).finally(store.toggleDrop)} />
-                    <MenuItem key={'conn-1'} children={<><span className="material-icons">wifi</span><span>Connect From</span></>} onClick={() =>
+                    <MenuItem dense key={'dn-sec'} children={<><span className="material-icons">download</span><span>Secret Value</span></>} onClick={() =>
+                        store.dn_sec().then(store.setInput).finally(store.toggleDrop)}
+                        {...onLongPress(() => store.dn_sec().then(_ => setTimeout(() => navigator.clipboard.writeText(_), 333)).then(() => store.set({ input: 'Sent to clipboard' })).finally(store.toggleDrop))} />
+                    <MenuItem dense key={'conn-1'} children={<><span className="material-icons">wifi</span><span>Connect From</span></>} onClick={() =>
                         store.conn().then(() => (store.setInput(key1[1]), store.toggleDrop()))} />
-                    <MenuItem key={'conn-2'} children={<><span className="material-icons">wifi</span><span>Connect To</span></>} onClick={() => {
+                    <MenuItem dense key={'conn-2'} children={<><span className="material-icons">wifi</span><span>Connect To</span></>} onClick={() => {
                         store.setInput(''), store.toggleDrop(), store.toggleScan()
                         const timer = setInterval(() => store.scanner || (clearInterval(timer), store.input && store.set_key2(store.input)
                             .then(() => store.up_pub(store.key2[1], true))
