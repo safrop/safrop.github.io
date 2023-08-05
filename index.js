@@ -21,22 +21,22 @@ addEventListener('fetch', (e) => e.respondWith((async () => {
       if (e.request.headers.get("Upgrade") !== "websocket") return response("Expected websocket", { status: 400 })
       const [webSocket, server] = Object.values(new WebSocketPair())
       return Promise.resolve(server).then((w) => {
-        let count = 0
         server.accept()
         server.addEventListener("close", () => w.close())
-        server.addEventListener("message", async ({ data }) => {
-          const timer = setInterval(() => {
-            if (count > 60) {
-              clearInterval(timer)
-              w.close()
-            }
-            safrop.get(data).then((v) => v && safrop.delete(data).then(() => {
-              clearInterval(timer)
-              w.send(v)
-              w.close()
-            }))
-            count += 1
-          }, 1000)
+        server.addEventListener("message", ({ data }) => {
+          safrop.put(data, false, { expirationTtl: 60 }).then(() => {
+            let count = 60
+            const timer = setInterval(() => safrop.get(data).then((v) => {
+              switch (v) {
+                case 'true':
+                  return safrop.delete(data).then(() => (clearInterval(timer), w.send(true), w.close()))
+                case 'false':
+                  return w.send(count -= 1)
+                default:
+                  clearInterval(timer), w.close()
+              }
+            }), 1000)
+          })
         })
       }).then(() => response(null, { status: 101, webSocket }))
     default:
