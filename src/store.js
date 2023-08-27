@@ -126,5 +126,37 @@ class Store {
     toggleDrop = (anchor = null) => {
         this.set({ dropAnchor: this.dropAnchor ? null : anchor })
     }
+    up_file = ([file]) => {
+        CFG.http.pathname = 'up_file'
+        const reader = new FileReader()
+        reader.readAsArrayBuffer(file)
+        reader.onload = (e) => Promise.resolve((e.target).result).then((data) => {
+            const key = prompt("Input a key to upload the file")
+            if (!key) return
+            const keyname = new TextEncoder().encode(key)
+            const filename = new TextEncoder().encode(file.name)
+            const [l1, l2] = [keyname.length, filename.length]
+            const [l1b, l2b] = [new Uint8Array([l1]), new Uint8Array([l2])]
+            const body = new Uint8Array(2 + l1 + l2 + data.byteLength)
+            body.set(l1b), body.set(keyname, 1)
+            body.set(l2b, l1 + 1), body.set(filename, l1 + 2)
+            body.set(new Uint8Array(data), l1 + l2 + 2)
+            fetch(CFG.http, { method: 'POST', body }).then(_ => _.text())
+        })
+    }
+    dn_file = () => {
+        const k = prompt("Input a key to download the file")
+        if (!k) return
+        CFG.http.pathname = 'dn_file'
+        fetch(CFG.http, { method: 'POST', body: JSON.stringify({ k }) }).then(_ => _.arrayBuffer()).then((data) => {
+            const length = new Uint8Array(data.slice(0, 1))[0]
+            const name = data.slice(1, length + 1)
+            const filename = new TextDecoder().decode(name)
+            let a = document.createElement("a")
+            a.download = filename
+            a.href = URL.createObjectURL(new File([data.slice(length + 1)], filename))
+            a.click(), a = null
+        })
+    }
 }
 export default new Store();

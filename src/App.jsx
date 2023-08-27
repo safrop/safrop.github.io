@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { HashRouter as Router, Navigate, useRoutes, Outlet } from 'react-router-dom';
 import { Dialog, DialogContent, DialogTitle, Input, IconButton, Box, ClickAwayListener, MenuList, MenuItem, Popover } from "@mui/material";
-import { Send, QrCodeScanner, Share, Cameraswitch, ContentCopy, Download, Upload, KeyboardArrowLeft, KeyboardArrowRight, Camera, ContentPaste, HighlightOff, HourglassTop } from '@mui/icons-material';
+import { Send, QrCodeScanner, Share, Cameraswitch, ContentCopy, Download, Upload, KeyboardArrowLeft, KeyboardArrowRight, Camera, ContentPaste, HighlightOff, HourglassTop, FileCopy } from '@mui/icons-material';
 import store, { observer } from './store'
 
 const path = window.location.pathname;
@@ -66,6 +66,8 @@ const Drop = observer(() => {
                             .then(() => store.up_pub(store.key2[1], true))
                             .then(() => store.set({ input: `Connected! ID: ${store.key2[1].slice(0, 32)}` }))), 500)
                     }} />
+                    <MenuItem dense key={'up-file'} component="label" children={<><span className="material-icons">upload</span><span>Upload File</span><input type="file" accept="*/*" style={{ display: 'none' }} onChange={({ target }) => (store.toggleDrop(), store.up_file(target.files ?? []), target.value = '')} /></>} />
+                    <MenuItem dense key={'dn-file'} children={<><span className="material-icons">download</span><span>Upload File</span></>} onClick={() => (store.toggleDrop(), store.dn_file())} />
                 </MenuList>} />} /></>
 })
 
