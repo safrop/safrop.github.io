@@ -11,7 +11,7 @@ addEventListener('fetch', (e) => e.respondWith((async () => {
       params.keylength = new Uint8Array(params.data.slice(0, 1))[0]
       params.key = params.data.slice(1, params.keylength + 1)
       params.keyname = new TextDecoder().decode(params.key)
-      await safrop.put(params.keyname, params.data.slice(params.keylength + 1))
+      await safrop.put(params.keyname, params.data.slice(params.keylength + 1), { expirationTtl: 900 })
       return response(params.keyname)
     case '/dn_file':
       params = await e.request.json()
