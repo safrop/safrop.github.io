@@ -141,7 +141,7 @@ class Store {
             body.set(l1b), body.set(keyname, 1)
             body.set(l2b, l1 + 1), body.set(filename, l1 + 2)
             body.set(new Uint8Array(data), l1 + l2 + 2)
-            fetch(CFG.http, { method: 'POST', body }).then(_ => _.text())
+            fetch(CFG.http, { method: 'POST', body }).then(_ => _.text()).then(()=>alert("Uploaded!"))
         })
     }
     dn_file = () => {

@@ -67,7 +67,7 @@ const Drop = observer(() => {
                             .then(() => store.set({ input: `Connected! ID: ${store.key2[1].slice(0, 32)}` }))), 500)
                     }} />
                     <MenuItem dense key={'up-file'} component="label" children={<><span className="material-icons">upload</span><span>Upload File</span><input type="file" accept="*/*" style={{ display: 'none' }} onChange={({ target }) => (store.toggleDrop(), store.up_file(target.files ?? []), target.value = '')} /></>} />
-                    <MenuItem dense key={'dn-file'} children={<><span className="material-icons">download</span><span>Upload File</span></>} onClick={() => (store.toggleDrop(), store.dn_file())} />
+                    <MenuItem dense key={'dn-file'} children={<><span className="material-icons">download</span><span>Download File</span></>} onClick={() => (store.toggleDrop(), store.dn_file())} />
                 </MenuList>} />} /></>
 })
 
